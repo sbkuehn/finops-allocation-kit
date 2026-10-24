@@ -1,4 +1,4 @@
-# finops-allocation-kit
+# FinOps Allocation Kit
 
 **Author:** Shannon Eldridge-Kuehn
 **Date:** October 24, 2026
