@@ -1,0 +1,20 @@
+{
+  "tags": {
+    "team": {
+      "tag_key": { "@@assign": "team" },
+      "tag_value": {
+        "@@assign": ["payments", "search", "data-platform", "mobile", "ml-research"]
+      },
+      "enforced_for": {
+        "@@assign": ["ec2:instance", "ec2:volume", "rds:db", "s3:bucket"]
+      }
+    },
+    "costcenter": {
+      "tag_key": { "@@assign": "costcenter" }
+    },
+    "env": {
+      "tag_key": { "@@assign": "env" },
+      "tag_value": { "@@assign": ["prod", "staging", "dev"] }
+    }
+  }
+}

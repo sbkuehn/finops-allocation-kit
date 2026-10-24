@@ -1,0 +1,16 @@
+// Azure Resource Graph: resources missing allocation tags
+// Run in Resource Graph Explorer or with:
+//   az graph query -q "$(cat queries/azure_untagged_resources.kql)" --first 1000
+//
+// A resource counts as allocatable if it has a team tag OR is flagged shared=true.
+// Tag keys are compared case-insensitively, because "Team" and "team" both
+// show up in every estate I've ever looked at.
+resources
+| extend tagsLower = parse_json(tolower(tostring(tags)))
+| extend team = tostring(tagsLower['team']),
+         shared = tostring(tagsLower['shared']),
+         costcenter = tostring(tagsLower['costcenter']),
+         env = tostring(tagsLower['env'])
+| where isempty(team) and shared != 'true'
+| project name, type, resourceGroup, subscriptionId, location, costcenter, env, tags
+| order by type asc, name asc

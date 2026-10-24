@@ -1,0 +1,11 @@
+// Azure Resource Graph: untagged resource counts by type
+// Useful for deciding where tag remediation pays off first.
+// Pair the counts with cost data before prioritizing; 400 untagged NICs
+// usually matter less than three untagged GPU VMs.
+resources
+| extend tagsLower = parse_json(tolower(tostring(tags)))
+| extend hasOwner = isnotempty(tostring(tagsLower['team'])) or tostring(tagsLower['shared']) == 'true'
+| summarize total = count(), untagged = countif(not(hasOwner)) by type
+| extend pctUntagged = round(100.0 * untagged / total, 1)
+| where untagged > 0
+| order by untagged desc

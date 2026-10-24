@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "displayName": "Inherit allocation tags from the resource group when missing",
+    "description": "Copies team, costcenter, and env from the parent resource group onto resources that don't set them. Cuts down on Deny noise without letting resources go untagged.",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Tags",
+      "version": "1.0.0",
+      "author": "Shannon Eldridge-Kuehn"
+    },
+    "parameters": {
+      "tagName": {
+        "type": "String",
+        "defaultValue": "team",
+        "metadata": {
+          "displayName": "Tag name",
+          "description": "Assign this definition once per tag (team, costcenter, env)."
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          { "field": "[concat('tags[', parameters('tagName'), ']')]", "exists": "false" },
+          { "value": "[resourceGroup().tags[parameters('tagName')]]", "notEquals": "" }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+          ],
+          "operations": [
+            {
+              "operation": "add",
+              "field": "[concat('tags[', parameters('tagName'), ']')]",
+              "value": "[resourceGroup().tags[parameters('tagName')]]"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

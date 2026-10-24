@@ -1,0 +1,7 @@
+Date,Team,Model,Requests,InputTokens,OutputTokens
+2026-09-01,search,small-model,182000,91000000,22000000
+2026-09-01,search,large-model,4100,6200000,1900000
+2026-09-01,payments,large-model,12500,18400000,5100000
+2026-09-01,mobile,small-model,96000,38000000,9600000
+2026-09-01,ml-research,large-model,21000,44000000,16000000
+2026-09-01,data-platform,small-model,15000,12000000,2100000

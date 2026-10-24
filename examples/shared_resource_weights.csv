@@ -1,0 +1,8 @@
+ResourceId,Team,WeightShare,Source
+aks-shared-nodepool-01,payments,0.30,CPU-seconds from Kubecost namespace report
+aks-shared-nodepool-01,search,0.25,CPU-seconds from Kubecost namespace report
+aks-shared-nodepool-01,data-platform,0.20,CPU-seconds from Kubecost namespace report
+aks-shared-nodepool-01,mobile,0.25,CPU-seconds from Kubecost namespace report
+gpu-shared-inference-pool,ml-research,0.55,GPU-hours from DCGM exporter
+gpu-shared-inference-pool,search,0.30,GPU-hours from DCGM exporter
+gpu-shared-inference-pool,payments,0.15,GPU-hours from DCGM exporter

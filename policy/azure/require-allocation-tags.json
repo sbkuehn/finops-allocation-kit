@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "displayName": "Require allocation tags on resources",
+    "description": "Denies resource creation unless the resource carries either a team tag or shared=true, plus costcenter and env. Pair with the inherit-tag policy so resource groups can supply defaults.",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Tags",
+      "version": "1.0.0",
+      "author": "Shannon Eldridge-Kuehn"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "allowedValues": ["Audit", "Deny", "Disabled"],
+        "defaultValue": "Audit",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Start with Audit, watch the compliance numbers for a couple of weeks, then flip to Deny."
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "allOf": [
+              { "field": "tags['team']", "exists": "false" },
+              { "field": "tags['shared']", "notEquals": "true" }
+            ]
+          },
+          { "field": "tags['costcenter']", "exists": "false" },
+          { "field": "tags['env']", "exists": "false" }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}
