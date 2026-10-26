@@ -1,7 +1,7 @@
 # FinOps Allocation Kit
 
 **Author:** Shannon Eldridge-Kuehn
-**Date:** October 24, 2026
+**Date:** October 25, 2026
 **Companion to:** [*Showback, Chargeback, and Allocation: The FinOps Ladder Nobody Gets to Skip*](https://www.shankuehn.io/post/showback-chargeback-and-allocation-the-finops-ladder-nobody-gets-to-skip) on [Cloudy Musings](https://shankuehn.io)
 
 This repo is the hands-on half of that post. The post makes the argument that allocation is the layer everything else in FinOps sits on, and that you should build an allocation coverage metric long before anyone sends a chargeback invoice. This kit gives you the pieces to actually do that against FOCUS-formatted billing data: flatten the tags, allocate direct and shared costs, track coverage over time, catch tag drift, and turn AI gateway telemetry into weights so token spend stops landing in the "nobody owns this" pile.
