@@ -158,8 +158,8 @@ python scripts/tag_drift.py examples/focus_export_sample.csv \
 
 The cheapest tag remediation project is the one you never have to run.
 
-**Azure** 
-`policy/azure/require-allocation-tags.json` requires either `team` or `shared=true`, plus `costcenter` and `env`. It defaults to `Audit`. Leave it there a couple of weeks, look at the compliance numbers, then flip to `Deny`. `inherit-tags-from-rg.json` copies tags from the resource group when they're missing, which takes a lot of the sting out of `Deny`.
+<u>**Azure**</u> 
+<br>`policy/azure/require-allocation-tags.json` requires either `team` or `shared=true`, plus `costcenter` and `env`. It defaults to `Audit`. Leave it there a couple of weeks, look at the compliance numbers, then flip to `Deny`. `inherit-tags-from-rg.json` copies tags from the resource group when they're missing, which takes a lot of the sting out of `Deny`.
 
 ```bash
 az policy definition create --name require-allocation-tags \
@@ -168,11 +168,11 @@ az policy definition create --name require-allocation-tags \
   --mode Indexed
 ```
 
-**AWS** 
-This one trips people up. Tag Policies enforce that tag *values* are consistent (no `Payments` vs `payments`), but they don't require a tag to exist. For that you need an SCP that denies create calls when `aws:RequestTag/team` is null. Both are in `policy/aws/`. Use them together.
+<u>**AWS**</u> 
+<br>This one trips people up. Tag Policies enforce that tag *values* are consistent (no `Payments` vs `payments`), but they don't require a tag to exist. For that you need an SCP that denies create calls when `aws:RequestTag/team` is null. Both are in `policy/aws/`. Use them together.
 
-**GCP** 
-GCP doesn't ship a built-in "require this label" constraint, so you write a custom organization policy constraint: a small YAML file with a CEL condition that runs on every create. `policy/gcp/` has two of them, mirroring the Azure and AWS files:
+<u>**GCP**</u> 
+<br>GCP doesn't ship a built-in "require this label" constraint, so you write a custom organization policy constraint: a small YAML file with a CEL condition that runs on every create. `policy/gcp/` has two of them, mirroring the Azure and AWS files:
 
 - `require-allocation-labels.yaml` requires `team` (or `shared=true`), plus `costcenter` and `env`
 - `allowed-env-values.yaml` keeps `env` to `prod`, `staging`, or `dev`, like the AWS Tag Policy does for values
