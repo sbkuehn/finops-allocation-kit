@@ -1,0 +1,36 @@
+# GCP custom organization policy constraint: require allocation labels
+#
+# GCP equivalent of policy/azure/require-allocation-tags.json and
+# policy/aws/scp-require-team-tag.json. Denies creation of resources that
+# don't carry either a team label or shared=true, plus costcenter and env.
+#
+# Labels (not Resource Manager tags) are what flow into the billing export,
+# so labels are what matter for allocation.
+#
+# Replace ORG_ID, or let policy/gcp/deploy.sh do it for you.
+#
+# A note on the condition: CEL errors when you read a map key that doesn't
+# exist, so check `'shared' in resource.labels` before reading its value.
+#
+# Resource type coverage: custom constraints only work on resource types each
+# service has published support for. Compute Engine instances and disks are
+# below. Check the custom constraints page for each additional service before
+# adding its types here; the label field name can differ by resource.
+name: organizations/ORG_ID/customConstraints/custom.requireAllocationLabels
+resourceTypes:
+- compute.googleapis.com/Instance
+- compute.googleapis.com/Disk
+methodTypes:
+- CREATE
+condition: >-
+  (
+    'team' in resource.labels ||
+    ('shared' in resource.labels && resource.labels['shared'] == 'true')
+  ) &&
+  'costcenter' in resource.labels &&
+  'env' in resource.labels
+actionType: ALLOW
+displayName: Require allocation labels
+description: >-
+  Resources must carry a team label (or shared=true), plus costcenter and env,
+  so cost can be allocated. See the shared cost allocation policy.

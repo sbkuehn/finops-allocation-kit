@@ -26,7 +26,8 @@ finops-allocation-kit/
 │   └── token_usage_to_weights.py     # token logs -> allocation weights
 ├── policy/
 │   ├── azure/   # Azure Policy: require tags, inherit from resource group
-│   └── aws/     # Tag Policy for value consistency + SCP to require presence
+│   ├── aws/     # Tag Policy for value consistency + SCP to require presence
+│   └── gcp/     # custom org policy constraints, deploy script, Terraform
 ├── queries/     # find untagged stuff in Azure (KQL), AWS, and GCP
 ├── docs/
 │   └── shared-cost-policy-template.md   # the written policy finance will ask for
@@ -168,7 +169,21 @@ az policy definition create --name require-allocation-tags \
 
 **AWS.** This one trips people up. Tag Policies enforce that tag *values* are consistent (no `Payments` vs `payments`), but they don't require a tag to exist. For that you need an SCP that denies create calls when `aws:RequestTag/team` is null. Both are in `policy/aws/`. Use them together.
 
-**GCP.** `queries/gcp_unlabeled_resources.sh` finds unlabeled resources with Cloud Asset Inventory. For enforcement, custom organization policy constraints can check labels on supported resource types; coverage varies by service, so check the current list for the resources you care about.
+**GCP.** GCP doesn't ship a built-in "require this label" constraint, so you write a custom organization policy constraint: a small YAML file with a CEL condition that runs on every create. `policy/gcp/` has two of them, mirroring the Azure and AWS files:
+
+- `require-allocation-labels.yaml` requires `team` (or `shared=true`), plus `costcenter` and `env`
+- `allowed-env-values.yaml` keeps `env` to `prod`, `staging`, or `dev`, like the AWS Tag Policy does for values
+
+`deploy.sh` registers both and puts them in dry run by default, which logs violations without blocking anything (think Azure Policy in Audit mode). Rerun with `--enforce` once the logs look clean.
+
+```bash
+./policy/gcp/deploy.sh 123456789012             # dry run
+./policy/gcp/deploy.sh 123456789012 --enforce   # deny non-compliant creates
+```
+
+If you'd rather keep these in your landing zone code, `policy/gcp/terraform/` does the same thing with `google_org_policy_custom_constraint` and `google_org_policy_policy`, flipping between dry run and enforce with one variable.
+
+Two GCP-specific things to know. First, custom constraints only work on resource types each service has published support for, so unlike Azure Policy there's no single rule that blankets everything. The files cover Compute Engine instances and disks; check each service's custom constraints page before adding more types. Second, there's no equivalent of Azure's `modify` effect for inheriting labels from a project, so defaults have to come from your IaC modules instead. For labels on objects *inside* GKE clusters, use Policy Controller (managed OPA Gatekeeper), since org policy only sees the cloud resources.
 
 ## Finding what's already untagged
 

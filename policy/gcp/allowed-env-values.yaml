@@ -1,0 +1,20 @@
+# GCP custom organization policy constraint: allowed env label values
+#
+# GCP equivalent of the value rules in policy/aws/tag-policy.json. Keeps the
+# env label to a known set so "prod", "production", and "prd" don't turn into
+# three separate environments in your showback report.
+#
+# GCP label keys and values must be lowercase, so at least the casing problem
+# Azure and AWS have is off the table here.
+name: organizations/ORG_ID/customConstraints/custom.allowedEnvValues
+resourceTypes:
+- compute.googleapis.com/Instance
+- compute.googleapis.com/Disk
+methodTypes:
+- CREATE
+condition: >-
+  !('env' in resource.labels) ||
+  resource.labels['env'] in ['prod', 'staging', 'dev']
+actionType: ALLOW
+displayName: Allowed env label values
+description: The env label, when present, must be prod, staging, or dev.
