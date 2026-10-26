@@ -140,14 +140,14 @@ September jumps from 83.0% to 94.1%. One weighting file did more than six months
 
 ## Keeping the inputs honest
 
-**Validate weights before they touch a report.** Weights that sum to 1.2 create money out of thin air, and weights that sum to 0.8 make it disappear. The validator exits non-zero on errors so you can put it in a pipeline.
+**Validate weights before they touch a report** - Weights that sum to 1.2 create money out of thin air, and weights that sum to 0.8 make it disappear. The validator exits non-zero on errors so you can put it in a pipeline.
 
 ```bash
 python scripts/validate_weights.py examples/shared_resource_weights.csv \
   --export examples/focus_export_sample.csv
 ```
 
-**Watch for tag drift, not just tag presence.** A resource tagged correctly six months ago may be running a completely different team's workload today. `tag_drift.py` flags ownership tags that were added, removed, or changed between two periods, plus resources whose owner stayed the same while cost jumped 50% or more (a common sign of a repurposed resource nobody re-tagged).
+**Watch for tag drift, not just tag presence** - A resource tagged correctly six months ago may be running a completely different team's workload today. `tag_drift.py` flags ownership tags that were added, removed, or changed between two periods, plus resources whose owner stayed the same while cost jumped 50% or more (a common sign of a repurposed resource nobody re-tagged).
 
 ```bash
 python scripts/tag_drift.py examples/focus_export_sample.csv \
@@ -158,7 +158,7 @@ python scripts/tag_drift.py examples/focus_export_sample.csv \
 
 The cheapest tag remediation project is the one you never have to run.
 
-**Azure.** `policy/azure/require-allocation-tags.json` requires either `team` or `shared=true`, plus `costcenter` and `env`. It defaults to `Audit`. Leave it there a couple of weeks, look at the compliance numbers, then flip to `Deny`. `inherit-tags-from-rg.json` copies tags from the resource group when they're missing, which takes a lot of the sting out of `Deny`.
+**Azure** `policy/azure/require-allocation-tags.json` requires either `team` or `shared=true`, plus `costcenter` and `env`. It defaults to `Audit`. Leave it there a couple of weeks, look at the compliance numbers, then flip to `Deny`. `inherit-tags-from-rg.json` copies tags from the resource group when they're missing, which takes a lot of the sting out of `Deny`.
 
 ```bash
 az policy definition create --name require-allocation-tags \
@@ -167,9 +167,9 @@ az policy definition create --name require-allocation-tags \
   --mode Indexed
 ```
 
-**AWS.** This one trips people up. Tag Policies enforce that tag *values* are consistent (no `Payments` vs `payments`), but they don't require a tag to exist. For that you need an SCP that denies create calls when `aws:RequestTag/team` is null. Both are in `policy/aws/`. Use them together.
+**AWS** This one trips people up. Tag Policies enforce that tag *values* are consistent (no `Payments` vs `payments`), but they don't require a tag to exist. For that you need an SCP that denies create calls when `aws:RequestTag/team` is null. Both are in `policy/aws/`. Use them together.
 
-**GCP.** GCP doesn't ship a built-in "require this label" constraint, so you write a custom organization policy constraint: a small YAML file with a CEL condition that runs on every create. `policy/gcp/` has two of them, mirroring the Azure and AWS files:
+**GCP** GCP doesn't ship a built-in "require this label" constraint, so you write a custom organization policy constraint: a small YAML file with a CEL condition that runs on every create. `policy/gcp/` has two of them, mirroring the Azure and AWS files:
 
 - `require-allocation-labels.yaml` requires `team` (or `shared=true`), plus `costcenter` and `env`
 - `allowed-env-values.yaml` keeps `env` to `prod`, `staging`, or `dev`, like the AWS Tag Policy does for values
